@@ -7,73 +7,75 @@ from ContractService import ContractService
 from PaypalService import PaypalService
 from PicpayService import PicpayService
 
-def obter_dados():
-    nome_banco = combo_banco.get()
-    valor = float(entry_valor.get())
-    data = datetime.strptime(entry_data.get(), "%d/%m/%Y").date()
-    numero = int(entry_numero.get())
+def obtain_date():
+    bank_name = combo_bank.get()
+    value = float(entry_value.get())
+    date = datetime.strptime(entry_date.get(), "%d/%m/%Y").date()
+    number = int(entry_number.get())
 
-    contract = Contract(numero, data, valor)
+    contract = Contract(number, date, value)
 
-    if(nome_banco == "Paypal"):
-        banco = PaypalService()
+    if(bank_name == "Paypal"):
+        bank = PaypalService()
     else:
-        banco = PicpayService()
+        bank = PicpayService()
 
-    contractService = ContractService(banco)
+    # Cria serviço do contrato fazendo o casting a partir do banco contratado
+    contractService = ContractService(bank)
 
-    contractService.process_contract(contract, numero)
+    contractService.process_contract(contract, number)
 
     installments = contract.get_installments()
 
     return installments
 
-def exibir_dados():
-    installments = obter_dados()
-    mensagem = f"Simulação do contrato:\n"
+def show_data():
+    installments = obtain_date()
+    output = f"Simulação do contrato:\n"
 
+    # Criar parcelas do contrato
     total_value = 0.0
     for i in installments:
         date_formatted = i.get_due_date().strftime("%d/%m/%Y")
         value_formatted = format(i.get_amount(), ".2f")
         total_value += float(value_formatted)
-        mensagem += f"Data: {date_formatted} ----- Valor: R${value_formatted}\n"
+        output += f"Data: {date_formatted} ----- Valor: R${value_formatted}\n"
 
-    mensagem += f"--------------------------------------\n"
+    output += f"----------------------------------------------\n"
     total_value_formatted = format(total_value, ".2f")
-    mensagem += f"Valor total do contrato: R${total_value_formatted}\n"
+    output += f"Valor total do contrato: R${total_value_formatted}\n"
 
-    # Criar uma janela pop-up para exibir as informações
-    popup = tk.Toplevel(janela)
+    # Criar uma window pop-up para exibir as informações
+    popup = tk.Toplevel(window)
     popup.title("Mais Informações")
-    tk.Label(popup, text=mensagem).pack(padx=10, pady=10)
+    tk.Label(popup, text=output).pack(padx=10, pady=10)
 
 # Opções para as caixas de combinação
-opcoes_banco = ["Paypal", "Picpay"]
+opcoes_bank = ["Paypal", "Picpay"]
 
-# Criar a janela principal
-janela = tk.Tk()
-janela.title("Cadastro de Transação Bancária")
+# Criar a window principal
+window = tk.Tk()
+window.title("Financiamento Bancário")
 
-# Criar e posicionar widgets na janela
-tk.Label(janela, text="Nome do Banco:").grid(row=0, column=0, padx=10, pady=10)
-tk.Label(janela, text="Valor:").grid(row=1, column=0, padx=10, pady=10)
-tk.Label(janela, text="Data (DD/MM/YYYY):").grid(row=2, column=0, padx=10, pady=10)
-tk.Label(janela, text="Número de parcelas:").grid(row=3, column=0, padx=10, pady=10)
+# Criar e posicionar widgets na window
+tk.Label(window, text="Nome do banco:").grid(row=0, column=0, padx=10, pady=10)
+tk.Label(window, text="Valor:").grid(row=1, column=0, padx=10, pady=10)
+tk.Label(window, text="Data (DD/MM/YYYY):").grid(row=2, column=0, padx=10, pady=10)
+tk.Label(window, text="Número de parcelas:").grid(row=3, column=0, padx=10, pady=10)
 
-combo_banco = ttk.Combobox(janela, values=opcoes_banco)
-entry_valor = tk.Entry(janela)
-entry_data = tk.Entry(janela)
-entry_numero = tk.Entry(janela)
+combo_bank = ttk.Combobox(window, values=opcoes_bank)
+entry_value = tk.Entry(window)
+entry_date = tk.Entry(window)
+entry_number = tk.Entry(window)
 
-combo_banco.grid(row=0, column=1, padx=10, pady=10)
-entry_valor.grid(row=1, column=1, padx=10, pady=10)
-entry_data.grid(row=2, column=1, padx=10, pady=10)
-entry_numero.grid(row=3, column=1, padx=10, pady=10)
+combo_bank.grid(row=0, column=1, padx=10, pady=10)
+entry_value.grid(row=1, column=1, padx=10, pady=10)
+entry_date.grid(row=2, column=1, padx=10, pady=10)
+entry_number.grid(row=3, column=1, padx=10, pady=10)
 
 # Botão para exibir os dados
-btn_exibir_dados = tk.Button(janela, text="Simular valor das parcelas", command=exibir_dados)
-btn_exibir_dados.grid(row=4, column=0, columnspan=2, pady=10)
+btn_show_data = tk.Button(window, text="Simular valor das parcelas", command=show_data)
+btn_show_data.grid(row=4, column=0, columnspan=2, pady=10)
 
-janela.mainloop()
+window.mainloop()
 

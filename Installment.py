@@ -1,5 +1,3 @@
-from datetime import date
-
 class Installment:
     def __init__(self, due_date, amount):
         self.__due_date = due_date

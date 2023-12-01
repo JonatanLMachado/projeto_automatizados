@@ -1,6 +1,3 @@
-from datetime import date
-from typing import List
-
 class Contract:
     def __init__(self, number, date, total_value):
         self.__number = number
